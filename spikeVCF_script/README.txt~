@@ -1,0 +1,3 @@
+This script works with julia 6.x
+Usage:  julia ./spikeVCF.jl test.vcf test.bed 1
+x
