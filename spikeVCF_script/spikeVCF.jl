@@ -1,5 +1,3 @@
-#!/uufs/chpc.utah.edu/sys/installdir/julia/0.6.1/bin/julia
-
 #= 
 This script spikes a variant into a vcf file for testing
 with VVP and VAAST3.
@@ -26,7 +24,7 @@ end
 vcf = ARGS[1]
 bed = ARGS[2]
 
-s=readstring(pipeline(`grep '^#C' "$vcf"`))
+s=read(`grep '^#C' "$vcf"`, String)
 ss=split(s, '\t')
 num=length(ss) - 9    #number of samples
 
@@ -38,7 +36,7 @@ mutidxs=split(ARGS[3], ',')
 ac = length(mutidxs)
 
 for i in 1:length(mutidxs)
-  smutidx=shift!(mutidxs)
+  smutidx=popfirst!(mutidxs)
   mutidx=parse(Int,smutidx)
   genos[mutidx] = "0/1"
 end
@@ -48,12 +46,11 @@ sgenos = join(genos, '\t')
 b = []
 open(ARGS[2]) do bed   
   for i in eachline(bed)
-    if ismatch(r"^[X|Y|M]", i)
+    if occursin(r"^[X|Y|M]", i)
       println("Sorry, only autosomes are allowed in this script.")
       exit()
     end
     push!(b,i)
-    println(b)
   end
 end
 
@@ -77,17 +74,17 @@ open(ARGS[1]) do vcf    #read bedfile and make lookup and set
 
   for i in eachline(vcf)
 
-    if ismatch(r"^\#", i)
+    if occursin(r"^\#", i)
       println(i)
       continue
     end
 
-    if ismatch(r"^X", i)
+    if occursin(r"^X", i)
       println(i)
       continue
     end
 
-    if ismatch(r"^Y", i)
+    if occursin(r"^Y", i)
       println(i)
       continue
     end
